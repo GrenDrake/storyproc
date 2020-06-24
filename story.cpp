@@ -11,7 +11,7 @@
 int main(int argc, char *argv[]) {
     bool quietMode = false;
     bool doOutput = false;
-    std::string filename("");
+    std::string filename(""), outFilename("");
     for (int i = 1; i < argc; ++i) {
         if (argv[i][0] == '-') {
             std::string arg(argv[i]);
@@ -19,6 +19,14 @@ int main(int argc, char *argv[]) {
                 quietMode = true;
             } else if ("-output" == arg) {
                 doOutput = true;
+            } else if ("-o" == arg) {
+                doOutput = true;
+                ++i;
+                if (i >= argc) {
+                    std::cerr << "-o expects filename.\n";
+                    return 1;
+                }
+                outFilename = argv[i];
             } else {
                 std::cerr << "Unrecgonized option " << arg << ".\n";
                 return 1;
@@ -112,13 +120,19 @@ int main(int argc, char *argv[]) {
     }
 
     if (doOutput) {
-        std::string outputFile = filename;
-        auto pos = outputFile.find_last_of('.');
-        if (pos != std::string::npos) {
-            outputFile.replace(pos, std::string::npos, ".md");
+        std::string outputFile;
+        if (outFilename.empty()) {
+            outputFile = filename;
+            auto pos = outputFile.find_last_of('.');
+            if (pos != std::string::npos) {
+                outputFile.replace(pos, std::string::npos, ".md");
+            } else {
+                outputFile += ".md";
+            }
         } else {
-            outputFile += ".md";
+            outputFile = outFilename;
         }
+
         std::ofstream outfile(outputFile);
         outfile << "# " << story.title << "\n\n_" << story.author;
         if (!story.date.empty()) outfile << " (" << story.date << ')';
