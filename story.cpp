@@ -49,6 +49,15 @@ int main(int argc, char *argv[]) {
         std::cerr << "Failed to open story file " << filename << ".\n";
         return 1;
     }
+    // deal with pointless byte order marks
+    if (file.peek() == 0xEF) {
+        char bytes[3];
+        file.read(bytes, 3);
+        if (bytes[0] != static_cast<char>(0xEF) || bytes[1] != static_cast<char>(0xBB) || bytes[2] != static_cast<char>(0xBF)) {
+            // not actually a byte order mark, so reset the file position
+            file.seekg(0);
+        }
+    }
 
     std::stringstream body;
     std::string line;
