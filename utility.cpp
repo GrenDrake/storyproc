@@ -15,11 +15,26 @@ std::string trim(const std::string &inStr) {
     return str;
 }
 
-std::string& replaceAll(std::string &text, const std::string &from, const std::string &to) {
-    std::string::size_type pos = text.find(from);
-    while (pos != std::string::npos) {
-        text.replace(pos, from.size(), to);
-        pos = text.find(from);
+bool g_isletter(int c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+bool g_isspace(int c) {
+    return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+}
+
+int countWords(const std::string &line) {
+    bool inWord = false;
+    int count = 0;
+    for (char c : line) {
+        if (g_isletter(c)) {
+            if (!inWord) {
+                inWord = true;
+                ++count;
+            }
+        } else if (g_isspace(c)) {
+            inWord = false;
+        }
     }
-    return text;
+    return count;
 }

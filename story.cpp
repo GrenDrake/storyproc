@@ -5,96 +5,10 @@
 #include <sstream>
 #include <vector>
 
-// #include "maddy/parser.h"
+#include "story.h"
 
-std::string trim(const std::string &inStr);
-
-bool g_isletter(int c) {
-    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
-}
-bool g_isspace(int c) {
-    return c == ' ' || c == '\t' || c == '\n' || c == '\r';
-}
-
-int countWords(const std::string &line) {
-    bool inWord = false;
-    int count = 0;
-    for (char c : line) {
-        if (g_isletter(c)) {
-            if (!inWord) {
-                inWord = true;
-                ++count;
-            }
-        } else if (g_isspace(c)) {
-            inWord = false;
-        }
-    }
-    return count;
-}
-
-struct Scene {
-    std::string name;
-    int wordCount;
-};
-
-struct Chapter {
-    Chapter(const std::string &name)
-    : name(name), wordCount(0)
-    {
-        scenes.push_back(Scene{"Opening"});
-    }
-    void addScene(const std::string &name) {
-        scenes.push_back(Scene{name});
-    }
-    void addWordCount(int count) {
-        wordCount += count;
-        scenes.back().wordCount += count;
-    }
-
-    std::string name;
-    int wordCount;
-    std::vector<Scene> scenes;
-};
-
-struct Story {
-    Story()
-    : title("Unnamed"), author("Anonymous"), wordCount(0)
-    {
-        addChapter("Preamble");
-    }
-    void addChapter(const std::string &name) {
-        chapters.push_back(Chapter(name));
-    }
-    void addScene(const std::string &name) {
-        chapters.back().scenes.push_back(Scene{name});
-    }
-    void addWordCount(int count) {
-        wordCount += count;
-        chapters.back().addWordCount(count);
-    }
-
-    std::string title, author, date;
-    int wordCount;
-    std::vector<Chapter> chapters;
-};
 
 int main(int argc, char *argv[]) {
-//     std::vector<std::string> tests{
-//         "Hello world!",
-//         "This is *really* great",
-//         "Good-bye!",
-//         "Dr. Jekyll. ",
-//         "\"Hello there,\" say Angela."
-//     };
-
-//     for (const std::string &s : tests) {
-//         int count = countWords(s);
-//         std::cout << s << ": " << count << "\n";
-//     }
-
-// }
-// int test() {
-
     bool quietMode = false;
     bool doOutput = false;
     std::string filename("");
@@ -183,7 +97,6 @@ int main(int argc, char *argv[]) {
         std::cout << std::left;
         for (const Chapter &chapter : story.chapters) {
             if (chapter.wordCount <= 0) continue;
-            // std::cout << "----------------------------------------------------------------------\n";
             std::cout << std::setw(56) << chapter.name << "  " << chapter.wordCount << '\n';
             for (const Scene &scene : chapter.scenes) {
                 if (scene.wordCount <= 0) continue;
@@ -193,7 +106,6 @@ int main(int argc, char *argv[]) {
 
         int rounded = story.wordCount / 100 * 100;
         if (story.wordCount % 100 > 50) rounded += 100;
-        // std::cout << "----------------------------------------------------------------------\n";
         std::cout << "                                                          ------------\n";
         std::cout << "Total count                                               " << story.wordCount << '\n';
         std::cout << "Total count (rounded)                                     " << rounded << "\n\n";
